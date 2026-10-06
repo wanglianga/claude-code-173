@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:uvend;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: localhost:9092
+
+uvend:
+  eventbus: local
+  expiry:
+    warning-days: 1
+  reconciliation:
+    confidence-threshold: 0.75

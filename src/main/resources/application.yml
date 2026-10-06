@@ -1,0 +1,56 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: uvend-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:uvend}
+    username: ${DB_USER:app}
+    password: ${DB_PASSWORD:app}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: uvend-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      missing-topics-fatal: false
+
+uvend:
+  # local = 进程内事件总线（默认，无需 Kafka）；kafka = 走真实 Kafka（outbox 重放）
+  eventbus: ${EVENTBUS:local}
+  expiry:
+    # 提前多少天判定为临期
+    warning-days: ${EXPIRY_WARNING_DAYS:1}
+  reconciliation:
+    # 低于该置信度的识别结果视为证据不足
+    confidence-threshold: 0.75
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.uvend: INFO
