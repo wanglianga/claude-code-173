@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cabinet-restock
+  datasource:
+    url: ${CABINET_DB_URL:jdbc:postgresql://localhost:5432/cabinet}
+    username: ${CABINET_DB_USER:app}
+    password: ${CABINET_DB_PASSWORD:app}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai
+        format_sql: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    consumer:
+      group-id: cabinet-restock-svc
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "com.cabinet.kafka.dto"
+    listener:
+      ack-mode: batch
+  jackson:
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+# 业务参数
+cabinet:
+  recognition:
+    # 融合置信度低于该值的关门结算挂起人工复核，不扣款
+    confidence-threshold: 0.75
+    # 称重交叉校验容差（克）
+    weight-tolerance-gram: 80
+  expiry:
+    # 距到期 <= 该天数即视为临期
+    near-expiry-days: 2
+  # 临期扫描 cron（每日 02:10）
+  scan-cron: "0 10 2 * * *"
+
+logging:
+  level:
+    com.cabinet: INFO

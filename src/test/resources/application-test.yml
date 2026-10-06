@@ -1,0 +1,21 @@
+# 单元/集成测试：H2 + 关闭 Kafka 监听（事件链路用 MockProducer/嵌入式单测覆盖）
+spring:
+  datasource:
+    url: jdbc:h2:mem:cabinet;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai
+  kafka:
+    bootstrap-servers: localhost:0
+    listener:
+      auto-startup: false
+
+cabinet:
+  scan-cron: "-"

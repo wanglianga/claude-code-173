@@ -1,0 +1,8 @@
+# 本地开发 profile（无 Docker 时直连本机 5433 的自建 PostgreSQL 与 9092 Kafka）
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5433/cabinet
+    username: app
+    password: ""
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
